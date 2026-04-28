@@ -1,0 +1,223 @@
+/* =============================================
+   DEEP BLUE AQUARIUM — CSS
+   ============================================= */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ocean-deep:    #020d1a;
+  --ocean-mid:     #04243d;
+  --ocean-light:   #0a4a7a;
+  --ocean-surface: #0d6eaa;
+  --ray-color:     rgba(130, 210, 255, 0.12);
+  --accent:        #48d4ff;
+  --accent-warm:   #ffce70;
+  --text-light:    rgba(255,255,255,0.85);
+  --text-dim:      rgba(255,255,255,0.45);
+  --night-overlay: rgba(0,0,20,0.72);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--ocean-deep);
+  font-family: 'Lato', sans-serif;
+  cursor: crosshair;
+}
+
+/* ── Canvas ── */
+#aquarium {
+  display: block;
+  width: 100vw; height: 100vh;
+  position: fixed; top: 0; left: 0; z-index: 0;
+}
+
+/* ── Water surface shimmer ── */
+#water-surface {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(10,90,150,0.18) 0%,
+    transparent 30%
+  );
+  animation: surface-shimmer 6s ease-in-out infinite alternate;
+}
+@keyframes surface-shimmer {
+  0%   { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* ── Light rays ── */
+#light-rays {
+  position: fixed; top: -10%; left: 0;
+  width: 100%; height: 80%;
+  pointer-events: none; z-index: 2;
+  overflow: hidden;
+}
+.ray {
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--ray-color) 0%, transparent 100%);
+  transform-origin: top center;
+  filter: blur(18px);
+  animation: ray-sway 8s ease-in-out infinite;
+}
+.ray:nth-child(1) { left: 8%;  width: 60px;  animation-delay: 0s;    animation-duration: 9s; }
+.ray:nth-child(2) { left: 22%; width: 100px; animation-delay: -2s;   animation-duration: 11s; }
+.ray:nth-child(3) { left: 45%; width: 80px;  animation-delay: -4s;   animation-duration: 8s; }
+.ray:nth-child(4) { left: 65%; width: 60px;  animation-delay: -1s;   animation-duration: 13s; }
+.ray:nth-child(5) { left: 82%; width: 90px;  animation-delay: -3.5s; animation-duration: 10s; }
+
+@keyframes ray-sway {
+  0%, 100% { transform: skewX(-4deg) scaleX(1);   opacity: 0.7; }
+  50%       { transform: skewX( 4deg) scaleX(1.1); opacity: 1;   }
+}
+
+/* ── UI Overlay ── */
+#ui-overlay {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 10;
+  display: flex; flex-direction: column;
+  align-items: flex-start;
+  padding: 2.2rem 2.5rem;
+}
+
+#title-block {
+  margin-bottom: auto;
+}
+#title-block h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  color: var(--accent);
+  text-shadow: 0 0 40px rgba(72,212,255,0.5), 0 2px 4px rgba(0,0,0,0.6);
+  line-height: 1;
+}
+.subtitle {
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  font-size: clamp(0.7rem, 1.3vw, 0.9rem);
+  letter-spacing: 0.5em;
+  color: var(--text-dim);
+  margin-top: 0.4rem;
+  text-transform: uppercase;
+}
+
+#instruction {
+  position: absolute;
+  bottom: 4.5rem; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  display: flex; align-items: center; gap: 0.5rem;
+  animation: pulse-fade 3s ease-in-out infinite;
+  white-space: nowrap;
+}
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: dot-pulse 3s ease-in-out infinite;
+}
+@keyframes pulse-fade {
+  0%, 100% { opacity: 0.5; } 50% { opacity: 0.9; }
+}
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); } 50% { transform: scale(1.5); }
+}
+
+/* ── Controls ── */
+#controls {
+  pointer-events: all;
+  display: flex; gap: 0.6rem;
+  position: absolute; top: 2rem; right: 2rem;
+}
+#controls button {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--text-light);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  backdrop-filter: blur(6px);
+}
+#controls button:hover {
+  background: rgba(72,212,255,0.18);
+  transform: scale(1.1);
+}
+
+/* ── Ripple effect ── */
+#ripple-container {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 5;
+  overflow: hidden;
+}
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(72,212,255,0.6);
+  transform: translate(-50%, -50%) scale(0);
+  animation: ripple-out 1.4s ease-out forwards;
+}
+@keyframes ripple-out {
+  0%   { transform: translate(-50%,-50%) scale(0);   opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(4.5); opacity: 0; }
+}
+
+/* ── Night mode ── */
+body.night #light-rays { opacity: 0.2; }
+body.night #water-surface { background: linear-gradient(180deg, rgba(0,0,30,0.4) 0%, transparent 40%); }
+body.night::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 3;
+  background: var(--night-overlay);
+  pointer-events: none;
+  animation: night-in 1.5s ease forwards;
+}
+@keyframes night-in { from { opacity: 0; } to { opacity: 1; } }
+body.day::after { animation: night-out 1.5s ease forwards; }
+@keyframes night-out { from { opacity: 1; } to { opacity: 0; } }
+
+/* ── Footer ── */
+#footer {
+  position: fixed; bottom: 0; left: 0;
+  width: 100%; z-index: 20;
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  background: linear-gradient(0deg, rgba(2,13,26,0.9) 0%, transparent 100%);
+  user-select: none;
+}
+#footer a {
+  display: flex; align-items: center; gap: 0.35rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+#footer a:hover {
+  color: #fff;
+  text-shadow: 0 0 12px var(--accent);
+}
+#footer a svg { vertical-align: middle; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  #ui-overlay { padding: 1.4rem 1.2rem; }
+  #controls { top: 1.2rem; right: 1.2rem; }
+  .ray { filter: blur(10px); }
+}
